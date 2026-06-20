@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Protótipo</title>
+<style>
+  :root{
+    --paper:#F7F3EA;
+    --paper-alt:#EFE9DA;
+    --ink:#1E2B24;
+    --ink-soft:#6B6358;
+    --brand:#2D5A4A;
+    --brand-dark:#1F4034;
+    --brand-soft:#E4ECE7;
+    --stamp:#A8431F;
+    --error:#B3261E;
+    --line:#DCD4C2;
+    --white:#FFFEFB;
+    --font-display: Georgia, 'Times New Roman', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'SF Mono', 'Cascadia Code', Consolas, 'Courier New', monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper-alt);
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    background:var(--brand);
+    color:var(--white);
+    padding:18px 20px 16px;
+    position:sticky;
+    top:0;
+    z-index:20;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+  .topbar h1{
+    font-family:var(--font-display);
+    font-size:22px;
+    margin:0 0 2px;
+    font-weight:600;
+    letter-spacing:.2px;
+  }
+  .topbar p{
+    margin:0;
+    font-size:12.5px;
+    opacity:.78;
+  }
+
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:18px 16px 110px;
+  }
+
+  /* ---------- document type switch ---------- */
+  .doctype-switch{
+    display:flex;
+    gap:2px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:3px;
+    margin-bottom:16px;
+  }
+  .doctype-switch button{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:9px 6px;
+    font-family:var(--font-body);
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+    border-radius:4px;
+  }
+  .doctype-switch button.active{
+    background:var(--brand);
+    color:var(--white);
+  }
+
+  /* ---------- cards ---------- */
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:18px 16px;
+    margin-bottom:14px;
+  }
+  .card h2{
+    font-family:var(--font-display);
+    font-size:15.5px;
+    margin:0 0 14px;
+    color:var(--brand-dark);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card h2 .num{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--ink-soft);
+    flex-shrink:0;
+  }
+  .card .hint{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin:-10px 0 14px;
+  }
+
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .field label .opt{
+    font-weight:400;
+    color:var(--ink-soft);
+    font-size:11px;
+  }
+  .field input,
+  .field select,
+  .field textarea{
+    width:100%;
+    padding:11px 12px;
+    border:1.5px solid var(--line);
+    border-radius:9px;
+    font-size:15px;
+    font-family:var(--font-body);
+    background:var(--paper);
+    color:var(--ink);
+    transition:border-color .15s;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus{
+    outline:none;
+    border-color:var(--brand);
+    background:var(--white);
+  }
+  .field textarea{resize:vertical;min-height:64px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+  .field.invalid input,
+  .field.invalid select{
+    border-color:var(--error);
+    background:#FBF0EF;
+  }
+  .errmsg{
+    display:none;
+    font-size:11.5px;
+    color:var(--error);
+    margin-top:5px;
+  }
+  .field.invalid .errmsg{display:block;}
+
+  /* ---------- items ---------- */
+  .item-row{
+    display:grid;
+    grid-template-columns:1fr 110px 32px;
+    gap:8px;
+    align-items:start;
+    margin-bottom:10px;
+  }
+  .item-row input{padding:10px 11px;font-size:14.5px;}
+  .item-remove{
+    width:32px;height:42px;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    border-radius:9px;
+    color:var(--ink-soft);
+    font-size:16px;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .item-remove:hover{border-color:var(--error);color:var(--error);}
+  .item-remove:disabled{opacity:.35;cursor:not-allowed;}
+
+  .add-item-btn{
+    width:100%;
+    padding:11px;
+    border:1.5px dashed var(--line);
+    border-radius:9px;
+    background:transparent;
+    color:var(--brand-dark);
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:2px;
+  }
+  .add-item-btn:hover{border-color:var(--brand);background:var(--brand-soft);}
+
+  .total-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1.5px solid var(--line);
+  }
+  .total-line .label{font-size:13px;color:var(--ink-soft);font-weight:600;}
+  .total-line .value{
+    font-family:var(--font-mono);
+    font-size:21px;
+    font-weight:700;
+    color:var(--brand-dark);
+  }
+
+  /* ---------- sticky CTA ---------- */
+  .cta-bar{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    background:var(--white);
+    border-top:1px solid var(--line);
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    z-index:20;
+  }
+  .cta-bar-inner{max-width:640px;margin:0 auto;}
+  .btn-primary{
+    width:100%;
+    padding:15px;
+    background:var(--brand);
+    color:var(--white);
+    border:none;
+    border-radius:11px;
+    font-size:15.5px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:var(--font-body);
+    letter-spacing:.2px;
+  }
+  .btn-primary:active{background:var(--brand-dark);}
+
+  /* ---------- receipt view ---------- */
+  #formView, #receiptView{display:none;}
+  #formView.active, #receiptView.active{display:block;}
+
+  .receipt-shell{
+    max-width:520px;
+    margin:0 auto;
+    padding:18px 16px 40px;
+  }
+  .receipt-actions{
+    display:flex;gap:10px;margin-bottom:16px;
+  }
+  .btn-secondary{
+    flex:1;
+    padding:13px;
+    background:var(--white);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    color:var(--ink);
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:var(--font-body);
+  }
+  .btn-secondary.primary{
+    background:var(--brand);
+    border-color:var(--brand);
+    color:var(--white);
+  }
+
+  .receipt{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:32px 26px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 6px 24px rgba(30,43,36,.08);
+  }
+  .receipt-logo{max-height:54px;max-width:200px;margin-bottom:10px;display:block;}
+  .receipt-header{
+    text-align:center;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:16px;
+    margin-bottom:18px;
+  }
+  .receipt-header .biz-name{
+    font-family:var(--font-display);
+    font-size:21px;
+    font-weight:700;
+    margin:0 0 4px;
+  }
+  .receipt-header .biz-meta{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+
+  .receipt-title-row{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    margin-bottom:18px;
+  }
+  .receipt-title-row .rec-label{
+    font-family:var(--font-display);
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .receipt-title-row .rec-num{
+    font-family:var(--font-mono);
+    font-size:13.5px;
+    font-weight:700;
+  }
+  .receipt-title-row .rec-date{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+
+  .receipt-body p{
+    font-size:14px;
+    line-height:1.7;
+    margin:0 0 14px;
+  }
+  .receipt-body .client-name{font-weight:700;}
+
+  table.items{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:14px;
+  }
+  table.items th{
+    text-align:left;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:var(--ink-soft);
+    border-bottom:1.5px solid var(--ink);
+    padding-bottom:6px;
+    font-weight:600;
+  }
+  table.items th.num, table.items td.num{text-align:right;}
+  table.items td{
+    font-size:13.5px;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+  }
+  table.items td.num{font-family:var(--font-mono);}
+
+  .receipt-total{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+    margin-bottom:18px;
+  }
+  .receipt-total .label{font-family:var(--font-display);font-size:14px;font-weight:700;}
+  .receipt-total .value{font-family:var(--font-mono);font-size:22px;font-weight:700;}
+
+  .receipt-meta-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;
+    margin-bottom:18px;
+    font-size:12.5px;
+  }
+  .receipt-meta-grid .k{color:var(--ink-soft);display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;}
+  .receipt-meta-grid .v{font-weight:600;}
+
+  .receipt-obs{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    border-top:1px dashed var(--line);
+    padding-top:12px;
+    margin-bottom:24px;
+    font-style:italic;
+  }
+
+  .receipt-sign{
+    margin-top:36px;
+    text-align:center;
+  }
+  .receipt-sign .line{
+    border-top:1px solid var(--ink);
+    width:230px;
+    margin:0 auto 6px;
+  }
+  .receipt-sign .name{font-size:12.5px;font-weight:600;}
+  .receipt-sign .role{font-size:10.5px;color:var(--ink-soft);}
+
+  /* sample watermark — visible on screen and in the printed PDF */
+  .watermark{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%) rotate(-26deg);
+    width:140%;
+    text-align:center;
+    font-family:var(--font-display);
+    font-size:40px;
+    font-weight:700;
+    letter-spacing:2px;
+    color:rgba(168,67,30,.14);
+    pointer-events:none;
+    z-index:1;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .watermark .sub{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:13px;
+    letter-spacing:3px;
+    margin-top:6px;
+    color:rgba(168,67,30,.16);
+  }
+
+  /* the stamp — signature element */
+  .stamp{
+    position:absolute;
+    width:96px;height:96px;
+    border:3px double var(--stamp);
+    border-radius:50%;
+    color:var(--stamp);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    transform:rotate(-11deg);
+    top:26px;right:24px;
+    opacity:.88;
+    mix-blend-mode:multiply;
+  }
+  .stamp .t1{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:3px;}
+  .stamp .t3{font-family:var(--font-mono);font-size:8px;letter-spacing:.5px;}
+
+  @media (max-width:380px){
+    .stamp{width:78px;height:78px;top:20px;right:16px;}
+    .stamp .t1{font-size:8.5px;}
+    .stamp .t2{font-size:14px;}
+  }
+
+  /* ---------- desktop polish ---------- */
+  @media (min-width:680px){
+    .wrap{padding-top:26px;}
+    .row2-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  }
+
+  /* ---------- print ---------- */
+  @media print{
+    body{background:#fff;}
+    .topbar, .receipt-actions, .cta-bar{display:none !important;}
+    .receipt-shell{padding:0;max-width:100%;}
+    .receipt{box-shadow:none;border:none;padding:6mm 4mm;}
+    .stamp{mix-blend-mode:normal;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <h1>Protótipo</h1>
+    <p>Preencha os dados abaixo para montar o documento.</p>
+  </div>
+
+  <!-- ===================== FORM VIEW ===================== -->
+  <div class="wrap" id="formView">
+
+    <div class="doctype-switch" id="doctypeSwitch">
+      <button type="button" data-type="orcamento">Orçamento</button>
+      <button type="button" data-type="recibo" class="active">Recibo</button>
+      <button type="button" data-type="pedido">Pedido</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">1.</span>Quem está emitindo</h2>
+      <div class="field" id="f_bizName">
+        <label>Nome ou razão social</label>
+        <input type="text" id="bizName" placeholder="Ex.: Ana Souza Designer">
+        <div class="errmsg">Informe o nome de quem está emitindo o documento.</div>
+      </div>
+      <div class="field" id="f_bizDoc">
+        <label>CPF ou CNPJ <span class="opt">(opcional)</span></label>
+        <input type="text" id="bizDoc" placeholder="000.000.000-00 ou 00.000.000/0000-00" inputmode="numeric">
+        <div class="errmsg">CPF precisa ter 11 números, CNPJ precisa ter 14.</div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Telefone <span class="opt">(opcional)</span></label>
+          <input type="tel" id="bizPhone" placeholder="(71) 99999-0000">
+        </div>
+        <div class="field" id="f_bizEmail">
+          <label>E-mail <span class="opt">(opcional)</span></label>
+          <input type="email" id="bizEmail" placeholder="contato@email.com">
+          <div class="errmsg">E-mail em formato inválido.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Endereço <span class="opt">(opcional)</span></label>
+        <input type="text" id="bizAddress" placeholder="Rua, número, bairro, cidade">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2.</span>Cliente</h2>
+      <div class="field" id="f_clientName">
+        <label>Nome do cliente</label>
+        <input type="text" id="clientName" placeholder="Nome de quem está pagando">
+        <div class="errmsg">Informe o nome do cliente.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">3.</span>Itens do serviço</h2>
+      <p class="hint">Adicione quantos itens forem necessários — o total é somado automaticamente.</p>
+      <div id="itemsContainer"></div>
+      <button type="button" class="add-item-btn" id="addItemBtn">+ Adicionar item</button>
+      <div class="total-line">
+        <span class="label">Total</span>
+        <span class="value" id="totalDisplay">R$ 0,00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">4.</span>Pagamento e data</h2>
+      <div class="row2">
+        <div class="field" id="f_payMethod">
+          <label>Forma de pagamento</label>
+          <select id="payMethod">
+            <option value="">Selecione...</option>
+            <option>Pix</option>
+            <option>Dinheiro</option>
+            <option>Cartão de crédito</option>
+            <option>Cartão de débito</option>
+            <option>Transferência bancária</option>
+            <option>Boleto</option>
+            <option>Outro</option>
+          </select>
+          <div class="errmsg">Selecione a forma de pagamento.</div>
+        </div>
+        <div class="field" id="f_serviceDate">
+          <label>Data do serviço</label>
+          <input type="date" id="serviceDate">
+          <div class="errmsg">Informe a data do serviço.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">5.</span>Observações <span class="opt">(opcional)</span></h2>
+      <div class="field">
+        <textarea id="obs" placeholder="Qualquer informação extra que deva constar no recibo"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">6.</span>Número do documento</h2>
+      <div class="field">
+        <label>Pode editar à vontade <span class="opt">(sugestão automática)</span></label>
+        <input type="text" id="recNumber">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cta-bar" id="ctaBar">
+    <div class="cta-bar-inner">
+      <button class="btn-primary" id="generateBtn">Gerar documento</button>
+    </div>
+  </div>
+
+  <!-- ===================== RECEIPT VIEW ===================== -->
+  <div class="receipt-shell" id="receiptView">
+    <div class="receipt-actions">
+      <button class="btn-secondary" id="editBtn">← Editar</button>
+      <button class="btn-secondary primary" id="printBtn">Imprimir / Salvar PDF</button>
+    </div>
+
+    <div class="receipt" id="receiptPaper">
+      <div class="watermark">PROTÓTIPO<span class="sub">NÃO VÁLIDO COMO DOCUMENTO</span></div>
+
+      <div class="stamp">
+        <div class="t1" id="stampType">RECIBO</div>
+        <div class="t3" id="stampDate"></div>
+      </div>
+
+      <div class="receipt-header">
+        <div class="biz-name" id="outBizName"></div>
+        <div class="biz-meta" id="outBizMeta"></div>
+      </div>
+
+      <div class="receipt-title-row">
+        <div>
+          <div class="rec-label" id="outDocLabel">Recibo</div>
+          <div class="rec-date" id="outIssueDate"></div>
+        </div>
+        <div style="text-align:right">
+          <div class="rec-num" id="outRecNumber"></div>
+        </div>
+      </div>
+
+      <div class="receipt-body">
+        <p id="outBodyText"></p>
+      </div>
+
+      <table class="items">
+        <thead>
+          <tr><th>Descrição</th><th class="num">Valor</th></tr>
+        </thead>
+        <tbody id="outItemsBody"></tbody>
+      </table>
+
+      <div class="receipt-total">
+        <span class="label">Total</span>
+        <span class="value" id="outTotal"></span>
+      </div>
+
+      <div class="receipt-meta-grid">
+        <div>
+          <span class="k">Forma de pagamento</span>
+          <span class="v" id="outPayMethod"></span>
+        </div>
+        <div>
+          <span class="k">Data do serviço</span>
+          <span class="v" id="outServiceDate"></span>
+        </div>
+      </div>
+
+      <div class="receipt-obs" id="outObsWrap" style="display:none">
+        <span id="outObs"></span>
+      </div>
+
+      <div class="receipt-sign">
+        <div class="line"></div>
+        <div class="name" id="outSignName"></div>
+        <div class="role">Assinatura</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+
+  // ---------- document type ----------
+  var DOC_TYPES = {
+    orcamento: {
+      label: 'Orçamento',
+      prefix: 'ORC',
+      body: function(client){ return 'Orçamento elaborado para <span class="client-name">'+client+'</span>, referente aos itens descritos abaixo. Valores sujeitos a confirmação.'; }
+    },
+    recibo: {
+      label: 'Recibo',
+      prefix: 'REC',
+      body: function(client){ return 'Recebi de <span class="client-name">'+client+'</span> o valor total descrito abaixo, referente aos itens detalhados a seguir.'; }
+    },
+    pedido: {
+      label: 'Pedido',
+      prefix: 'PED',
+      body: function(client){ return 'Pedido registrado para <span class="client-name">'+client+'</span>, referente aos itens descritos a seguir.'; }
+    }
+  };
+  var docType = 'recibo';
+  var doctypeSwitch = document.getElementById('doctypeSwitch');
+  doctypeSwitch.addEventListener('click', function(e){
+    var btn = e.target.closest('button');
+    if(!btn) return;
+    docType = btn.dataset.type;
+    doctypeSwitch.querySelectorAll('button').forEach(function(b){
+      b.classList.toggle('active', b === btn);
+    });
+    document.getElementById('recNumber').value = suggestRecNumber();
+  });
+
+  // ---------- helpers ----------
+  function brl(n){
+    return n.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  }
+  function parseMoney(str){
+    if(!str) return NaN;
+    var cleaned = str.toString().trim().replace(/\./g,'').replace(',', '.');
+    var n = parseFloat(cleaned);
+    return n;
+  }
+  function fmtDateBR(isoStr){
+    if(!isoStr) return '';
+    var p = isoStr.split('-');
+    if(p.length!==3) return isoStr;
+    return p[2] + '/' + p[1] + '/' + p[0];
+  }
+  function setInvalid(fieldId, isInvalid){
+    var el = document.getElementById(fieldId);
+    if(!el) return;
+    el.classList.toggle('invalid', isInvalid);
+  }
+
+  // ---------- item rows ----------
+  var itemsContainer = document.getElementById('itemsContainer');
+  var itemCounter = 0;
+
+  function addItemRow(prefillDesc, prefillVal){
+    itemCounter++;
+    var id = 'item_' + itemCounter;
+    var row = document.createElement('div');
+    row.className = 'item-row';
+    row.dataset.id = id;
+    row.innerHTML =
+      '<input type="text" class="item-desc" placeholder="Descrição do serviço/produto" value="'+(prefillDesc||'')+'">' +
+      '<input type="text" class="item-val" placeholder="0,00" inputmode="decimal" value="'+(prefillVal||'')+'">' +
+      '<button type="button" class="item-remove" title="Remover item">×</button>';
+    itemsContainer.appendChild(row);
+
+    row.querySelector('.item-remove').addEventListener('click', function(){
+      if(itemsContainer.children.length <= 1) return;
+      row.remove();
+      updateTotal();
+      updateRemoveButtons();
+    });
+    row.querySelector('.item-val').addEventListener('input', updateTotal);
+    row.querySelector('.item-val').addEventListener('blur', function(){
+      var v = parseMoney(this.value);
+      if(!isNaN(v) && v > 0){ this.value = v.toFixed(2).replace('.', ','); }
+    });
+    updateRemoveButtons();
+    updateTotal();
+  }
+
+  function updateRemoveButtons(){
+    var btns = itemsContainer.querySelectorAll('.item-remove');
+    btns.forEach(function(b){ b.disabled = itemsContainer.children.length <= 1; });
+  }
+
+  function getItems(){
+    var rows = itemsContainer.querySelectorAll('.item-row');
+    var items = [];
+    rows.forEach(function(r){
+      var desc = r.querySelector('.item-desc').value.trim();
+      var valRaw = r.querySelector('.item-val').value;
+      var val = parseMoney(valRaw);
+      items.push({desc: desc, val: val, row: r});
+    });
+    return items;
+  }
+
+  function updateTotal(){
+    var total = 0;
+    getItems().forEach(function(it){
+      if(!isNaN(it.val) && it.val > 0) total += it.val;
+    });
+    document.getElementById('totalDisplay').textContent = brl(total);
+  }
+
+  document.getElementById('addItemBtn').addEventListener('click', function(){
+    addItemRow();
+  });
+
+  addItemRow(); // start with one row
+
+  // ---------- auto document number ----------
+  function suggestRecNumber(){
+    var d = new Date();
+    var pad = function(n){ return n.toString().padStart(2,'0'); };
+    return DOC_TYPES[docType].prefix + '-' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes());
+  }
+  document.getElementById('recNumber').value = suggestRecNumber();
+
+  // default service date = today
+  document.getElementById('serviceDate').valueAsDate = new Date();
+
+  // ---------- email format ----------
+  function isValidEmail(v){
+    if(!v) return true; // optional
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
+
+  // ---------- CPF/CNPJ format (optional, just length check) ----------
+  function isValidDoc(v){
+    if(!v) return true; // optional
+    var digits = v.replace(/\D/g,'');
+    return digits.length === 11 || digits.length === 14;
+  }
+
+  // ---------- validation ----------
+  function validate(){
+    var ok = true;
+
+    var bizName = document.getElementById('bizName').value.trim();
+    if(!bizName){ setInvalid('f_bizName', true); ok = false; } else setInvalid('f_bizName', false);
+
+    var bizEmail = document.getElementById('bizEmail').value.trim();
+    if(!isValidEmail(bizEmail)){ setInvalid('f_bizEmail', true); ok = false; } else setInvalid('f_bizEmail', false);
+
+    var bizDoc = document.getElementById('bizDoc').value.trim();
+    if(!isValidDoc(bizDoc)){ setInvalid('f_bizDoc', true); ok = false; } else setInvalid('f_bizDoc', false);
+
+    var clientName = document.getElementById('clientName').value.trim();
+    if(!clientName){ setInvalid('f_clientName', true); ok = false; } else setInvalid('f_clientName', false);
+
+    var items = getItems();
+    var itemsValid = true;
+    items.forEach(function(it){
+      var rowInvalid = !it.desc || isNaN(it.val) || it.val <= 0;
+      it.row.style.outline = rowInvalid ? '1.5px solid var(--error)' : 'none';
+      it.row.style.borderRadius = rowInvalid ? '9px' : '0';
+      if(rowInvalid) itemsValid = false;
+    });
+    if(!itemsValid) ok = false;
+
+    var payMethod = document.getElementById('payMethod').value;
+    if(!payMethod){ setInvalid('f_payMethod', true); ok = false; } else setInvalid('f_payMethod', false);
+
+    var serviceDate = document.getElementById('serviceDate').value;
+    if(!serviceDate){ setInvalid('f_serviceDate', true); ok = false; } else setInvalid('f_serviceDate', false);
+
+    return ok;
+  }
+
+  // live-clear validation as user types
+  ['bizName','bizEmail','bizDoc','clientName','payMethod','serviceDate'].forEach(function(id){
+    var el = document.getElementById(id);
+    var evt = (el.tagName === 'SELECT') ? 'change' : 'input';
+    el.addEventListener(evt, function(){
+      var wrapId = 'f_' + id;
+      var v = el.value.trim();
+      if(id === 'bizEmail'){ setInvalid(wrapId, !isValidEmail(v)); }
+      else if(id === 'bizDoc'){ setInvalid(wrapId, !isValidDoc(v)); }
+      else if(v) setInvalid(wrapId, false);
+    });
+  });
+  itemsContainer.addEventListener('input', function(){
+    getItems().forEach(function(it){
+      if(it.desc && !isNaN(it.val) && it.val > 0){
+        it.row.style.outline = 'none';
+      }
+    });
+  });
+
+  // ---------- generate receipt ----------
+  document.getElementById('generateBtn').addEventListener('click', function(){
+    if(!validate()){
+      var firstInvalid = document.querySelector('.invalid, .item-row[style*="error"]');
+      if(firstInvalid) firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+
+    var bizName = document.getElementById('bizName').value.trim();
+    var bizDoc = document.getElementById('bizDoc').value.trim();
+    var bizPhone = document.getElementById('bizPhone').value.trim();
+    var bizEmail = document.getElementById('bizEmail').value.trim();
+    var bizAddress = document.getElementById('bizAddress').value.trim();
+    var clientName = document.getElementById('clientName').value.trim();
+    var payMethod = document.getElementById('payMethod').value;
+    var serviceDate = document.getElementById('serviceDate').value;
+    var obs = document.getElementById('obs').value.trim();
+    var recNumber = document.getElementById('recNumber').value.trim() || suggestRecNumber();
+
+    var items = getItems().filter(function(it){ return it.desc && !isNaN(it.val) && it.val > 0; });
+    var total = items.reduce(function(s,it){ return s + it.val; }, 0);
+
+    // header
+    document.getElementById('outBizName').textContent = bizName;
+    var metaParts = [];
+    if(bizDoc) metaParts.push(bizDoc);
+    if(bizAddress) metaParts.push(bizAddress);
+    if(bizPhone) metaParts.push(bizPhone);
+    if(bizEmail) metaParts.push(bizEmail);
+    document.getElementById('outBizMeta').textContent = metaParts.join(' · ');
+
+    var typeInfo = DOC_TYPES[docType];
+    document.getElementById('stampType').textContent = typeInfo.label.toUpperCase();
+    document.getElementById('outDocLabel').textContent = typeInfo.label;
+    document.getElementById('outBodyText').innerHTML = typeInfo.body(escapeHtml(clientName));
+
+    document.getElementById('outRecNumber').textContent = recNumber;
+    document.getElementById('outIssueDate').textContent = 'Emitido em ' + fmtDateBR(new Date().toISOString().slice(0,10));
+
+    var tbody = document.getElementById('outItemsBody');
+    tbody.innerHTML = '';
+    items.forEach(function(it){
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>'+escapeHtml(it.desc)+'</td><td class="num">'+brl(it.val)+'</td>';
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('outTotal').textContent = brl(total);
+    document.getElementById('outPayMethod').textContent = payMethod;
+    document.getElementById('outServiceDate').textContent = fmtDateBR(serviceDate);
+
+    var obsWrap = document.getElementById('outObsWrap');
+    if(obs){
+      document.getElementById('outObs').textContent = obs;
+      obsWrap.style.display = 'block';
+    } else {
+      obsWrap.style.display = 'none';
+    }
+
+    document.getElementById('outSignName').textContent = bizName;
+    document.getElementById('stampDate').textContent = fmtDateBR(serviceDate);
+
+    showView('receipt');
+    window.scrollTo(0,0);
+  });
+
+  function escapeHtml(s){
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  document.getElementById('editBtn').addEventListener('click', function(){
+    showView('form');
+    window.scrollTo(0,0);
+  });
+
+  document.getElementById('printBtn').addEventListener('click', function(){
+    window.print();
+  });
+
+  function showView(name){
+    document.getElementById('formView').classList.toggle('active', name==='form');
+    document.getElementById('ctaBar').style.display = (name==='form') ? 'block' : 'none';
+    document.getElementById('receiptView').classList.toggle('active', name==='receipt');
+  }
+
+  showView('form');
+
+})();
+</script>
+</body>
+</html>
