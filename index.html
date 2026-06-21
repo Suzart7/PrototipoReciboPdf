@@ -429,9 +429,26 @@
   @media print{
     body{background:#fff;}
     .topbar, .receipt-actions, .cta-bar{display:none !important;}
-    .receipt-shell{padding:0;max-width:100%;}
-    .receipt{box-shadow:none;border:none;padding:6mm 4mm;}
-    .stamp{mix-blend-mode:normal;}
+    .receipt-shell{padding:0;max-width:680px;margin:0 auto;}
+    .receipt{box-shadow:none;border:none;padding:14mm 12mm;}
+    .stamp{mix-blend-mode:normal;width:120px;height:120px;}
+    .stamp .t1{font-size:14px;}
+    .stamp .t3{font-size:10px;}
+
+    .receipt-header .biz-name{font-size:32px;}
+    .receipt-header .biz-meta{font-size:16px;}
+    .receipt-title-row .rec-label{font-size:18px;}
+    .receipt-title-row .rec-num{font-size:19px;}
+    .receipt-title-row .rec-date{font-size:15px;}
+    .receipt-body p{font-size:19px;line-height:1.6;}
+    table.items th{font-size:14px;}
+    table.items td{font-size:18px;padding:12px 0;}
+    .receipt-total .label{font-size:20px;}
+    .receipt-total .value{font-size:32px;}
+    .receipt-meta-grid{font-size:17px;}
+    .receipt-obs{font-size:16px;}
+    .receipt-sign .name{font-size:17px;}
+    .receipt-sign .role{font-size:14px;}
   }
 </style>
 </head>
@@ -455,7 +472,7 @@
       <h2><span class="num">1.</span>Quem está emitindo</h2>
       <div class="field" id="f_bizName">
         <label>Nome ou razão social</label>
-        <input type="text" id="bizName" placeholder="Ex.: Esteticar Deus Conosco">
+        <input type="text" id="bizName" placeholder="Ex.: Deus Conosco Esteticar">
         <div class="errmsg">Informe o nome de quem está emitindo o documento.</div>
       </div>
       <div class="field" id="f_bizDoc">
@@ -889,6 +906,15 @@
   });
 
   document.getElementById('printBtn').addEventListener('click', function(){
+    var paper = document.getElementById('receiptPaper');
+    var heightMM = Math.ceil(paper.offsetHeight / 96 * 25.4) + 80;
+    var styleTag = document.getElementById('dynamicPageSize');
+    if(!styleTag){
+      styleTag = document.createElement('style');
+      styleTag.id = 'dynamicPageSize';
+      document.head.appendChild(styleTag);
+    }
+    styleTag.textContent = '@page{ size:210mm ' + heightMM + 'mm; margin:0; }';
     window.print();
   });
 
