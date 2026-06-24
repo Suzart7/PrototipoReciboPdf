@@ -988,7 +988,7 @@
 
       // header
       doc.setFont('helvetica','bold');
-      doc.setFontSize(18);
+      doc.setFontSize(22);
       doc.setTextColor(26,18,0);
       doc.text(document.getElementById('outBizName').textContent, W/2, y, {align:'center'});
       gap(6);
@@ -996,7 +996,7 @@
       var meta = document.getElementById('outBizMeta').textContent;
       if(meta){
         doc.setFont('helvetica','normal');
-        doc.setFontSize(9);
+        doc.setFontSize(11);
         doc.setTextColor(120,100,50);
         doc.text(meta, W/2, y, {align:'center', maxWidth:CW});
         gap(6);
@@ -1006,23 +1006,23 @@
 
       // title row
       doc.setFont('helvetica','bold');
-      doc.setFontSize(11);
+      doc.setFontSize(13);
       doc.setTextColor(120,100,50);
       doc.text(document.getElementById('outDocLabel').textContent.toUpperCase(), M, y);
       doc.setFont('courier','bold');
-      doc.setFontSize(11);
+      doc.setFontSize(13);
       doc.setTextColor(26,18,0);
       doc.text(document.getElementById('outRecNumber').textContent, W-M, y, {align:'right'});
       gap(5);
       doc.setFont('helvetica','normal');
-      doc.setFontSize(8.5);
+      doc.setFontSize(11);
       doc.setTextColor(120,100,50);
       doc.text(document.getElementById('outIssueDate').textContent, M, y);
       gap(8);
 
       // body text
       doc.setFont('helvetica','normal');
-      doc.setFontSize(11);
+      doc.setFontSize(13);
       doc.setTextColor(26,18,0);
       var bodyEl = document.getElementById('outBodyText');
       doc.text(bodyEl.textContent, M, y, {maxWidth:CW});
@@ -1030,7 +1030,7 @@
 
       // items table header
       doc.setFont('helvetica','bold');
-      doc.setFontSize(9);
+      doc.setFontSize(11);
       doc.setTextColor(120,100,50);
       doc.text('DESCRIÇÃO', M, y);
       doc.text('VALOR', W-M, y, {align:'right'});
@@ -1042,7 +1042,7 @@
       rows.forEach(function(tr){
         var cells = tr.querySelectorAll('td');
         doc.setFont('helvetica','normal');
-        doc.setFontSize(11);
+        doc.setFontSize(13);
         doc.setTextColor(26,18,0);
         doc.text(cells[0].textContent, M, y, {maxWidth:CW-40});
         doc.setFont('courier','normal');
@@ -1061,7 +1061,7 @@
       doc.setLineWidth(0.2);
       gap(5);
       doc.setFont('helvetica','bold');
-      doc.setFontSize(13);
+      doc.setFontSize(15);
       doc.text('Total', M, y);
       doc.setFont('courier','bold');
       doc.setFontSize(16);
